@@ -8,10 +8,9 @@
         <a href="{{ route('clients.create') }}" class="btn btn-primary">Add New Client</a>
     </div>
 
-    <form class="form-inline my-2 my-lg-0" type="get" action="{{ url('/search') }}">
-        <input class="form-control mr-sm-2" name="query" type="search" placeholder="search product">
-        <button class="btn btn-primary" type="submit">Search</button>
-    </form>
+    <input v-model="searchQuery" class="form-control mr-sm-2" type="search" placeholder="search product">
+    <button @click="searchClient()" class="btn btn-primary">Search</button>
+
     <table class="table">
         <thead>
           <tr>
@@ -69,10 +68,24 @@
         el: '#app',
         data: {
             clients: [],
+            searchQuery: ''
+        },
+        watch: {
+          searchQuery() {
+            if (this.searchQuery.trim() == '') {
+              this.fetchClients();
+            }
+          }
         },
         methods: {
             fetchClients() {
                 HttpClient.get('/clients/fetch_all')
+                    .then(res => {
+                        this.clients = res.data.clients;
+                    });
+            },
+            searchClient() {
+                HttpClient.get('/search?query=' + this.searchQuery)
                     .then(res => {
                         this.clients = res.data.clients;
                     });

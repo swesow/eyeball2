@@ -11,15 +11,26 @@ class ClientsController extends Controller
         return view('client.index');
     }
 
-    public function search()
+    public function search(Request $request)
     {
-        $search_text = $_GET['query'];
+        /*$search_text = $_GET['query'];
         //$clients = Client::where('agent','LIKE', '%'.$search_text.'%')->with('clients.id')->get();
         $clients = Client::where('agent_id','LIKE', '%'.$search_text.'%')
         ->with('agent')
         ->orderBy('clients.id', 'DESC')
         ->get();
         return view ('client.search',compact('clients'));
+        */
+        // $search_text = $_GET['query'];
+        $search_text = $request->query('query');
+        $clients = Client::orWhere('first_name', 'LIKE', '%'. $search_text .'%')
+        ->orWhere('last_name', 'LIKE', '%'. $search_text .'%')
+        ->with('agent')
+        ->get();
+
+        return [
+            'clients' => $clients
+        ];
     }
 
 
@@ -37,7 +48,6 @@ class ClientsController extends Controller
                 ->get();
         }
        
-
         return [
             'clients' => $clients
         ];
